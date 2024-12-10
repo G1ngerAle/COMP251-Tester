@@ -448,23 +448,30 @@ class McMetroTest {
     }
 
     @Test
-    void testMaxPassengers_noPath() {
+    void testMaxPassengers_disconnectedPath() { // with single odd loop
         BuildingID bid1 = new BuildingID(1);
         BuildingID bid2 = new BuildingID(2);
         BuildingID bid3 = new BuildingID(3);
         Building[] buildings = new Building[]{
                 new Building(bid1, 100),
                 new Building(bid2, 200),
-                new Building(bid3, 300)
+                new Building(bid3, 300),
+                new Building(bid4, 100),
+                new Building(bid5, 200) //disconnected building
         };
 
         Track[] tracks = new Track[]{
-                new Track(new TrackID(1), bid1, bid2, 100, 50)
+                new Track(new TrackID(1), bid1, bid2, 100, 50),
+                new Track(new TrackID(2), bid2, bid4, 100, 50),
+                new Track(new TrackID(3), bid3, bid1, 100, 60),
+                new Track(new TrackID(4), bid1, bid3, 100, 40),
+                new Track(new TrackID(5), bid2, bid3, 100, 60),
+                new Track(new TrackID(6), bid3, bid2, 100, 30)
         };
 
         McMetro mcMetro = new McMetro(tracks, buildings);
-        int maxPassengers = mcMetro.maxPassengers(bid1, bid3);
-        assertEquals(0, maxPassengers);
+        int maxPassengers = mcMetro.maxPassengers(bid1, bid4);
+        assertEquals(50, maxPassengers);
     }
 
     @Test
