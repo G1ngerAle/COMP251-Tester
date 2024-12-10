@@ -487,6 +487,9 @@ class McMetroTest {
         BuildingID bid1 = new BuildingID(1);
         BuildingID bid2 = new BuildingID(2);
         BuildingID bid3 = new BuildingID(3);
+        BuildingID bid4 = new BuildingID(4);
+        BuildingID bid5 = new BuildingID(5);
+
         Building[] buildings = new Building[]{
                 new Building(bid1, 100),
                 new Building(bid2, 200),
