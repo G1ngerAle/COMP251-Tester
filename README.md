@@ -110,4 +110,4 @@ Soon I'll be merging all your changes into the main branch of this project. You 
 
 (This README file is copied from comp250Test from @santoshlite)
 
-(The tester now is the combination of tests from the original tester and the work from my colleague @lectern and @Mona Wang)
+(The tester now is the combination of tests from the original tester and the work from my colleague @lectern and @Mona Wang and @Jackson)
