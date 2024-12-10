@@ -6,6 +6,7 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.*;
 
 class McMetroTest {
+    // From lectern
     @Test
     void testMaxPassengers() {
         BuildingID bid1 = new BuildingID(1);
@@ -750,5 +751,276 @@ class McMetroTest {
 
         int toHire = McMetro.hireTicketCheckers(schedule);
         assertEquals(4, toHire);
+    }
+    // From Mona Wang
+    @Test
+    void testMaxPassengers() {
+        BuildingID bid1 = new BuildingID(1);
+        BuildingID bid2 = new BuildingID(2);
+        Building[] buildings = new Building[]{
+                new Building(bid1, 100),
+                new Building(bid2, 200)
+        };
+
+        Track[] tracks = new Track[]{
+                new Track(new TrackID(1), bid1, bid2, 100, 50)
+        };
+
+        McMetro mcMetro = new McMetro(tracks, buildings);
+        int maxPassengers = mcMetro.maxPassengers(bid1, bid2);
+        assertEquals(50, maxPassengers);
+    }
+
+    @Test
+    void testMaxPassengers_noPath() {
+        BuildingID bid1 = new BuildingID(1);
+        BuildingID bid2 = new BuildingID(2);
+        BuildingID bid3 = new BuildingID(3);
+        Building[] buildings = new Building[]{
+                new Building(bid1, 100),
+                new Building(bid2, 200),
+                new Building(bid3, 300)
+        };
+
+        Track[] tracks = new Track[]{
+                new Track(new TrackID(1), bid1, bid2, 100, 50)
+        };
+
+        McMetro mcMetro = new McMetro(tracks, buildings);
+        int maxPassengers = mcMetro.maxPassengers(bid1, bid3);
+        assertEquals(0, maxPassengers);
+    }
+
+    @Test
+    void testMaxPassengers_noCapacity() {
+        BuildingID bid1 = new BuildingID(1);
+        BuildingID bid2 = new BuildingID(2);
+        BuildingID bid3 = new BuildingID(3);
+        Building[] buildings = new Building[]{
+                new Building(bid1, 100),
+                new Building(bid2, 200),
+                new Building(bid3, 300)
+        };
+
+        Track[] tracks = new Track[]{
+                new Track(new TrackID(1), bid1, bid2, 100, 0),
+                new Track(new TrackID(2), bid2, bid3, 100, 50)
+        };
+
+        McMetro mcMetro = new McMetro(tracks, buildings);
+        int maxPassengers = mcMetro.maxPassengers(bid1, bid3);
+        assertEquals(0, maxPassengers);
+    }
+
+    @Test
+    void testMaxPassengers_parallelPaths() {
+        BuildingID bid1 = new BuildingID(1);
+        BuildingID bid2 = new BuildingID(2);
+        BuildingID bid3 = new BuildingID(3);
+        Building[] buildings = new Building[]{
+                new Building(bid1, 100),
+                new Building(bid2, 200),
+                new Building(bid3, 300),
+        };
+
+        Track[] tracks = new Track[]{
+                new Track(new TrackID(1), bid1, bid2, 100, 30),
+                new Track(new TrackID(2), bid2, bid3, 100, 50),
+                new Track(new TrackID(3), bid1, bid3, 100, 40)
+        };
+
+        McMetro mcMetro = new McMetro(tracks, buildings);
+        int maxPassengers = mcMetro.maxPassengers(bid1, bid3);
+        assertEquals(70, maxPassengers);
+    }
+
+    @Test
+    void testMaxPassengers_simplecyclePath() { // taken from https://brilliant.org/wiki/flow-network/
+        BuildingID bid1 = new BuildingID(1);
+        BuildingID bid2 = new BuildingID(2);
+        BuildingID bid3 = new BuildingID(3);
+        BuildingID bid4 = new BuildingID(4);
+        Building[] buildings = new Building[]{
+                new Building(bid1, 100),
+                new Building(bid2, 200),
+                new Building(bid3, 300),
+                new Building(bid4, 300),
+        };
+
+        Track[] tracks = new Track[]{
+                new Track(new TrackID(1), bid1, bid2, 100, 2),
+                new Track(new TrackID(2), bid1, bid3, 100, 4),
+                new Track(new TrackID(3), bid2, bid3, 100, 3),
+                new Track(new TrackID(4), bid3, bid2, 100, 3),
+                new Track(new TrackID(5), bid2, bid4, 100, 4),
+                new Track(new TrackID(6), bid3, bid4, 100, 3)
+        };
+
+        McMetro mcMetro = new McMetro(tracks, buildings);
+        int maxPassengers = mcMetro.maxPassengers(bid1, bid4);
+        assertEquals(6, maxPassengers);
+    }
+
+    @Test
+    void testMaxPassengers_complexcyclePath() { // taken from https://brilliant.org/wiki/flow-network/
+        BuildingID bid1 = new BuildingID(1);
+        BuildingID bid2 = new BuildingID(2);
+        BuildingID bid3 = new BuildingID(3);
+        BuildingID bid4 = new BuildingID(4);
+        BuildingID bid5 = new BuildingID(5);
+        BuildingID bid6 = new BuildingID(6);
+        Building[] buildings = new Building[]{
+                new Building(bid1, 100),
+                new Building(bid2, 200),
+                new Building(bid3, 300),
+                new Building(bid4, 300),
+                new Building(bid5, 300),
+                new Building(bid6, 300),
+        };
+
+        Track[] tracks = new Track[]{
+                new Track(new TrackID(1), bid1, bid2, 100, 16),
+                new Track(new TrackID(2), bid1, bid3, 100, 13),
+                new Track(new TrackID(3), bid2, bid3, 100, 10),
+                new Track(new TrackID(4), bid3, bid2, 100, 4),
+                new Track(new TrackID(5), bid2, bid4, 100, 12),
+                new Track(new TrackID(6), bid3, bid5, 100, 14),
+                new Track(new TrackID(7), bid4, bid3, 100, 9),
+                new Track(new TrackID(8), bid5, bid4, 100, 7),
+                new Track(new TrackID(9), bid4, bid6, 100, 20),
+                new Track(new TrackID(10), bid5, bid6, 100, 4)
+        };
+
+        McMetro mcMetro = new McMetro(tracks, buildings);
+        int maxPassengers = mcMetro.maxPassengers(bid1, bid6);
+        assertEquals(23, maxPassengers);
+    }
+
+    @Test
+    void testMaxPassengers_complexcyclePath2() {
+        BuildingID bid1 = new BuildingID(1);
+        BuildingID bid2 = new BuildingID(2);
+        BuildingID bid3 = new BuildingID(3);
+        BuildingID bid4 = new BuildingID(4);
+        BuildingID bid5 = new BuildingID(5);
+        BuildingID bid6 = new BuildingID(6);
+        BuildingID bid7 = new BuildingID(7);
+        BuildingID bid8 = new BuildingID(8);
+        Building[] buildings = new Building[]{
+                new Building(bid1, 100),
+                new Building(bid2, 200),
+                new Building(bid3, 300),
+                new Building(bid4, 300),
+                new Building(bid5, 300),
+                new Building(bid6, 300),
+                new Building(bid7, 300),
+                new Building(bid8, 300),
+        };
+
+        Track[] tracks = new Track[]{
+                new Track(new TrackID(1), bid1, bid2, 100, 6),
+                new Track(new TrackID(2), bid1, bid3, 100, 6),
+                new Track(new TrackID(3), bid3, bid2, 100, 5),
+                new Track(new TrackID(4), bid2, bid4, 100, 4),
+                new Track(new TrackID(5), bid2, bid5, 100, 2),
+                new Track(new TrackID(6), bid3, bid5, 100, 9),
+                new Track(new TrackID(7), bid4, bid6, 100, 4),
+                new Track(new TrackID(8), bid4, bid7, 100, 7),
+                new Track(new TrackID(9), bid5, bid4, 100, 8),
+                new Track(new TrackID(10), bid5, bid7, 100, 7),
+                new Track(new TrackID(11), bid6, bid8, 100, 7),
+                new Track(new TrackID(12), bid7, bid6, 100, 11),
+                new Track(new TrackID(13), bid7, bid8, 100, 4)
+        };
+
+        McMetro mcMetro = new McMetro(tracks, buildings);
+        int maxPassengers = mcMetro.maxPassengers(bid1, bid8);
+        assertEquals(11, maxPassengers);
+    }
+
+    @Test
+    void testBestMetro() {
+        BuildingID bid1 = new BuildingID(1);
+        BuildingID bid2 = new BuildingID(2);
+        Building[] buildings = new Building[]{
+                new Building(bid1, 100),
+                new Building(bid2, 200)
+        };
+
+        TrackID tid = new TrackID(1);
+        Track[] tracks = new Track[]{
+                new Track(tid, bid1, bid2, 100, 50)
+        };
+
+        McMetro mcMetro = new McMetro(tracks, buildings);
+        TrackID[] bms = mcMetro.bestMetroSystem();
+        TrackID[] expected = new TrackID[]{tid};
+        assertArrayEquals(expected, bms);
+    }
+
+    @Test
+    void testBestMetro2() {
+        BuildingID bid1 = new BuildingID(1);
+        BuildingID bid2 = new BuildingID(2);
+        BuildingID bid3 = new BuildingID(3);
+        BuildingID bid4 = new BuildingID(4);
+        BuildingID bid5 = new BuildingID(5);
+        BuildingID bid6 = new BuildingID(6);
+        Building[] buildings = new Building[]{
+                new Building(bid1, 1000),
+                new Building(bid2, 2000),
+                new Building(bid3, 3000),
+                new Building(bid4, 1000),
+                new Building(bid5, 2000),
+                new Building(bid6, 3000),
+        };
+
+        TrackID tid1 = new TrackID(1);
+        TrackID tid2 = new TrackID(2);
+        TrackID tid3 = new TrackID(3);
+        TrackID tid4 = new TrackID(4);
+        TrackID tid5 = new TrackID(5);
+        TrackID tid6 = new TrackID(6);
+        TrackID tid7 = new TrackID(7);
+        Track[] tracks = new Track[]{
+                new Track(tid1, bid1, bid2, 100, 50),
+                new Track(tid2, bid1, bid3, 100, 100),
+                new Track(tid3, bid2, bid3, 100, 200),
+                new Track(tid4, bid4, bid5, 100, 50),
+                new Track(tid5, bid4, bid6, 100, 100),
+                new Track(tid6, bid5, bid6, 100, 200),
+                new Track(tid7, bid5, bid2, 100, 300),
+        };
+        McMetro mcMetro = new McMetro(tracks, buildings);
+        TrackID[] bms = mcMetro.bestMetroSystem();
+        TrackID[] expected = new TrackID[]{tid7, tid6, tid3, tid5, tid2};
+        assertArrayEquals(expected, bms);
+    }
+
+    @Test
+    void testSearchForPassengers() {
+        McMetro mcMetro = new McMetro(new Track[0], new Building[0]);
+        String[] passengers = {"Alex", "Bob", "Ally"};
+        String[] expected = {"Alex", "Ally"};
+        mcMetro.addPassengers(passengers);
+
+        ArrayList<String> found = mcMetro.searchForPassengers("al");
+        assertArrayEquals(expected, found.toArray(new String[0]));
+    }
+
+    @Test
+    void testHireTicketCheckers() {
+        int[][] schedule = new int[4][2];
+        schedule[0][0] = 1;
+        schedule[0][1] = 2;
+        schedule[1][0] = 2;
+        schedule[1][1] = 3;
+        schedule[2][0] = 3;
+        schedule[2][1] = 4;
+        schedule[3][0] = 1;
+        schedule[3][1] = 3;
+
+        int toHire = McMetro.hireTicketCheckers(schedule);
+        assertEquals(3, toHire);
     }
 }
